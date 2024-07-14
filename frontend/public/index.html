@@ -24,11 +24,45 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>Reservaciones App</title>
+    <script>
+      var callAPI = (details,reservationTime,reservationType)=>{
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var raw = JSON.stringify({details:details,reservationTime:reservationTime,reservationType:reservationType});
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        };
+        fetch("https://y30z07fx9l.execute-api.us-west-2.amazonaws.com/Semestral", requestOptions)
+          .then(response => response.text())
+          .then(result => alert(JSON.parse(result).body))
+          .catch(error => console.log("error", error))
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <h2>Formulario de reservacion</h2>
+    <form>
+      <label>Detalles:</label>
+        <input type="text" name="details" />
+        <br />
+        <label>Fecha de reservacion:</label>
+        <input type="date" name="reservationTime" />
+        <br />
+        <label>Tipo de reserva:</label>
+        <select name="reservationType">
+          <option value="Comida">Comida</option>
+          <option value="Bebida">Bebida</option>
+        </select>
+        <br />
+        <button type="button" onclick="callAPI(details.value,reservationTime.value,reservationType.value)">Enviar</button>
+        <br />
+    </form>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
