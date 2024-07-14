@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+      nodejs: 14
+    commands:
+      - pip install -r backend/requirements.txt
+      - npm install -g @aws-amplify/cli
+      - npm install --prefix frontend
+  build:
+    commands:
+      - npm run build --prefix frontend
+      - sam build --template backend/templates/template.yaml
+      - sam package --s3-bucket YOUR_S3_BUCKET --output-template-file backend/templates/packaged.yaml
+artifacts:
+  files:
+    - backend/templates/packaged.yaml
+    - frontend/build/**/*
+
+cache:
+  paths:
+    - node_modules/**/*
+

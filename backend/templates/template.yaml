@@ -1,0 +1,50 @@
+# SAM template or CloudFormation template
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+  CreateReservationFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: create_reservation.lambda_handler
+      Runtime: python3.8
+      Role: arn:aws:iam::YOUR_ACCOUNT_ID:role/your-lambda-execution-role
+      Events:
+        CreateReservationAPI:
+          Type: Api
+          Properties:
+            Path: /reservations
+            Method: post
+  GetReservationsFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: get_reservations.lambda_handler
+      Runtime: python3.8
+      Role: arn:aws:iam::YOUR_ACCOUNT_ID:role/your-lambda-execution-role
+      Events:
+        GetReservationsAPI:
+          Type: Api
+          Properties:
+            Path: /reservations
+            Method: get
+  ReservationsTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: 'Reservations'
+      AttributeDefinitions:
+        - AttributeName: 'userId'
+          AttributeType: 'S'
+        - AttributeName: 'reservationId'
+          AttributeType: 'S'
+      KeySchema:
+        - AttributeName: 'userId'
+          KeyType: 'HASH'
+        - AttributeName: 'reservationId'
+          KeyType: 'RANGE'
+      BillingMode: PAY_PER_REQUEST
+Outputs:
+  CreateReservationAPI:
+    Description: "API endpoint URL for creating reservations"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/reservations"
+  GetReservationsAPI:
+    Description: "API endpoint URL for getting reservations"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/reservations"
